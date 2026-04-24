@@ -1,5 +1,3 @@
-Viewed basic-04-unit-ledc-syntax.html:1-423
-
 針對 **`basic-04-unit-ledc-syntax` (ESP32 LEDC 控制器語法)** 單元，這是學員從「功能實作」邁向「韌體架構設計」的必經之路。它要求學員具備 **硬體資源分配 (Hardware Resource Management)** 的概念，學習如何精確配置 ESP32 的 16 個獨立 PWM 頻道，並學會將底層的暫存器概念（頻率、解析度、佔空比）封裝成高層級、易於使用的 **運動控制 API**。
 
 以下是在 **GitHub Classroom** 部署其作業 (Assignments) 的具體建議：
