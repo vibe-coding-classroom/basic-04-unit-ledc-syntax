@@ -1,0 +1,89 @@
+name: GitHub Classroom Workflow
+
+on: [push]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    name: Autograding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: ${{ runner.os }}-platformio
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install PlatformIO
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+
+      - name: Check File Structure
+        id: file-structure
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Check File Structure"
+          setup-command: ""
+          command: "test -f include/ledc_init.h && test -f src/main.cpp"
+          timeout: 10
+          max-score: 20
+
+      - name: Verify LEDC Configuration
+        id: ledc-config
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Verify LEDC Configuration"
+          setup-command: ""
+          command: "grep -E 'CH_L_MOTOR|CH_R_MOTOR' include/ledc_init.h && grep 'MOTOR_FREQ' include/ledc_init.h"
+          timeout: 10
+          max-score: 30
+
+      - name: Verify setMotorSpeed Implementation
+        id: api-implementation
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "Verify setMotorSpeed Implementation"
+          setup-command: ""
+          command: "grep 'setMotorSpeed' src/main.cpp && grep -E '> 100|< 0' src/main.cpp"
+          timeout: 10
+          max-score: 30
+
+      - name: PlatformIO Build
+        id: build
+        uses: education/autograding-command-grader@v1
+        with:
+          test-name: "PlatformIO Build"
+          setup-command: ""
+          command: "pio run"
+          timeout: 30
+          max-score: 20
+
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        env:
+          FILE-STRUCTURE_RESULTS: "${{steps.file-structure.outputs.result}}"
+          LEDC-CONFIG_RESULTS: "${{steps.ledc-config.outputs.result}}"
+          API-IMPLEMENTATION_RESULTS: "${{steps.api-implementation.outputs.result}}"
+          BUILD_RESULTS: "${{steps.build.outputs.result}}"
+        with:
+          runners: file-structure,ledc-config,api-implementation,build

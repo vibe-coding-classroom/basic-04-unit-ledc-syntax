@@ -1,0 +1,8 @@
+Frequency(Hz),Noise Level(1-10),Stability(1-10),Notes
+100,2,8,Visible vibration in motor casing
+500,4,7,Lower frequency hum
+1000,6,6,Clear audible whistle
+5000,8,5,High pitched scream
+10000,5,9,Whistle becoming less noticeable
+20000,1,10,Silent and smooth operation (Sweet Spot)
+40000,1,10,Silent but power efficiency may decrease
